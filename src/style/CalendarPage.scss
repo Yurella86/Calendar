@@ -1,0 +1,131 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+    &::before,
+    &::after {
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+
+    &:focus {
+        outline: none;
+    }
+}
+
+.wrapper-grid {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto auto auto;
+    grid-template-rows: 25px 100px 100px 100px 100px 100px 100px 100px;
+    margin: 20px 50px;
+    gap: -10px;
+
+    .title {
+        padding: 0px 20px;
+        font-size: 20px;
+    }
+
+    .wrapper-day {
+        position: relative;
+        border: 1px solid rgb(0, 0, 0);
+        padding: 5px;
+        cursor: pointer;
+        z-index: 10;
+        background-color: white;
+        transition: all 0.5s ease;
+
+        &:hover:not(.out-of-month) {
+            z-index: 11;
+            transform: scale(1.1, 1.1);
+            transition: all 0.2s ease;
+            border: none;
+            box-shadow: 0px 0px 10px rgb(148, 148, 148);
+            overflow: hidden;
+        }
+
+        &.weekend {
+            background-color: rgb(201, 222, 241);
+        }
+
+        &.out-of-month {
+            opacity: 0.3;
+            cursor: auto;
+        }
+    }
+}
+.ReactModal__Overlay--after-open {
+    z-index: 100;
+}
+
+.modal {
+    position: relative;
+    z-index: 100;
+    background-color: white;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 500px;
+
+    .modal-head {
+        text-align: center;
+    }
+    .modal-content {
+        padding: 10px 20px;
+    }
+}
+
+.events-items {
+    max-height: 70px;
+    overflow-y: auto;
+    .event {
+        background-color: rgb(193, 255, 193);
+        border-radius: 5px;
+        margin: 2px auto;
+    }
+}
+
+.wrapper-hd-container {
+    padding: 10px 30px;
+    line-height: 40px;
+
+    .flex-hr {
+        justify-content: start;
+    }
+
+    .center-hd {
+        flex-grow: 1;
+        text-align: center;
+        font-size: 20px;
+        font-weight: 600;
+    }
+
+    .right-hd {
+        flex-basis: 350px;
+
+        .flex-hr {
+            justify-content: space-around;
+        }
+    }
+}
+
+.left-hd {
+    margin: 0px 50px;
+}
+
+.flex-hr {
+    display: flex;
+    flex-direction: row;
+}
+
+@media screen and (max-width: 991px) {
+    .wrapper-grid {
+        grid-template-rows: 25px 80px 80px 80px 80px 80px 80px 80px;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .wrapper-grid {
+        grid-template-rows: 25px 50px 50px 50px 50px 50px 50px 50px;
+    }
+}

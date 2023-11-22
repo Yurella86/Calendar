@@ -1,8 +1,9 @@
+import CalendarPage from "./components/CalendarPage";
 
 function App() {
   return (
     <div className="App">
-      Calendar
+      <CalendarPage />
     </div>
   );
 }
