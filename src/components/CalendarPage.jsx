@@ -5,13 +5,15 @@ import moment from 'moment';
 import DatePicker from 'react-datepicker';
 
 
-const titleOfDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+// const titleOfDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 const HomePage = () => {
 
-    moment.updateLocale('ua', { week: { dow: 1 } })
+    moment.updateLocale('es', { week: { dow: 1 } })
     const [events, setEvents] = useState([]);
+    const [updateEventsTitle, setUpdateEventsTitle] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalEventOpen, setIsModalEventOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [formData, setFormData] = useState({
         title: '',
@@ -19,43 +21,110 @@ const HomePage = () => {
         date: '',
         time: '',
     });
-
-    var currMonthName = moment().format('MM');
-    console.log('currMonthName' + currMonthName);
-
-    const startMomentCalendar = moment().startOf('month').startOf('week');
-    const endMomentCalendar = moment().endOf('month').endOf('week');
-    const daysInMonth = endMomentCalendar.diff(startMomentCalendar, 'days') + 1;
-
-    const days = []
+    const [updateData, setUpdateData] = useState({
+        title: '',
+        description: '',
+        date: '',
+        time: '',
+    });
 
     useEffect(() => {
         const storedEvents = JSON.parse(localStorage.getItem('events')) || [];
         setEvents(storedEvents);
     }, []);
 
+    // useEffect(() => {
+    //     const storedEvents = JSON.parse(localStorage.getItem('events')) || [];
+    //     setEvents(storedEvents);
+    // }, [events]);
+
+    // console.log(moment(selectedDate).startOf('month').startOf('week'));
+    // console.log('selectedDate => ' + selectedDate.getMonth());
+
+    const startMomentCalendar = moment(selectedDate).startOf('month').startOf('week');
+    const endMomentCalendar = moment(selectedDate).endOf('month').endOf('week');
+    const daysInMonth = endMomentCalendar.diff(startMomentCalendar, 'days') + 1;
+
+    // console.log('startMomentCalendar => ' + startMomentCalendar.format());
+    // console.log('endMomentCalendar => ' + endMomentCalendar.format());
+    // console.log('daysInMonth =>' + daysInMonth);
+
+    const days = []
+
+    const handleDateChange = (date) => {
+        setSelectedDate(date);
+    };
+
     for (let i = 0; i < daysInMonth; i++) {
-        const currentDay = moment().startOf('month').startOf('week').add(i, 'days');
+        const currentDay = moment(selectedDate).startOf('month').startOf('week').add(i, 'days');
         const dayEvents = events.filter((event) => event.date === currentDay.format('YYYY-MM-DD'));
 
         days.push({
-            dayNumber: currentDay.format('D'),
-            dayOfWeek: currentDay.format('d'),
-            monthOfDay: currentDay.format('M'),
+            fullDate: currentDay,
             events: dayEvents
         })
     }
 
-    const calendarPlace = days.map(({ dayNumber, dayOfWeek, monthOfDay, events }) =>
-        <div className={`wrapper-day ${dayOfWeek === "6" || dayOfWeek === "0" ? 'weekend' : ''}${monthOfDay !== moment().format('M') ? ' out-of-month' : ''}`}>
-            {dayNumber}
-            <div className='events-items'>
-                {events.map(evet => <div className='event'>{evet.title}</div>)}
+    // ---------- START UPDATE EVENT CARD -----------
+    const handleUpdateEvent = (e) => {
+        const titleEvent = e.target.textContent
+        setUpdateEventsTitle(titleEvent)
+
+        setIsModalEventOpen(true)
+
+        const localEvents = JSON.parse(localStorage.getItem('events')) || [];
+        const resultFiltered = localEvents.filter((e) => `${e.title}` === titleEvent);
+
+        setUpdateData({
+            title: resultFiltered[0].title,
+            description: resultFiltered[0].description,
+            date: resultFiltered[0].date,
+            time: resultFiltered[0].time,
+        });
+        console.log("updateData =>" + updateData.date);
+    }
+
+    const handleFormUpdate = (e) => {
+        setUpdateData({ ...updateData, [e.target.name]: e.target.value });
+    }
+
+    const handleUpdateAllEvents = (e) => {
+        e.preventDefault();
+
+        const updated = {
+            title: updateData.title,
+            description: updateData.description,
+            date: updateData.date,
+            time: updateData.time,
+            created: 'f',
+        };
+
+        const localEvents = JSON.parse(localStorage.getItem('events')) || [];
+        const resultFiltered = localEvents.filter((e) => `${e.title}` !== updateEventsTitle);
+
+        const updatedEvents = [...resultFiltered, updated];
+        localStorage.setItem('events', JSON.stringify(updatedEvents));
+        setIsModalEventOpen(false)
+        setEvents(updatedEvents);
+
+    }
+    // ---------- END UPDATE EVENT CARD -----------
+
+    const calendarPlace = days.map(({ fullDate, events }, index) =>
+        <div key={index} className={`wrapper-day ${fullDate.format('d') === "6" || fullDate.format('d') === "0" ? 'weekend' : ''}${fullDate.format('M') !== moment(selectedDate).format('M') ? ' out-of-month' : ''}${fullDate.format('YYYY-MM-DD') === moment().format('YYYY-MM-DD') ? 'current' : ''}`}>
+            <div className={`number`}>
+                <div className='flex-hr'>
+                    <span>{fullDate.format('D')}</span>
+                    <span>{fullDate.format('ddd')}</span>
+                </div>
             </div>
-        </div>
+            <div className='events-items'>
+                {events.map((event, index) => <div key={index} className='event' onClick={handleUpdateEvent}>{event.title}</div>)}
+            </div>
+        </div >
     )
 
-    const renderTitles = titleOfDays.map(title => <div className='title'>{title}</div>)
+    // const renderTitles = titleOfDays.map(title => <div className='title'>{title}</div>)
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
@@ -88,26 +157,20 @@ const HomePage = () => {
         console.log(formData);
     }
 
-    const handleDateChange = (date) => {
-        setSelectedDate(date);
-    };
-
     const openModal = () => {
         setIsModalOpen(true);
     };
 
-    const handleDayClick = (day) => {
-        console.log('Selected day:', day.format('YYYY-MM-DD'));
-    };
+    const closeEventModal = () => {
+        setIsModalEventOpen(false)
+    }
+
+    // const handleDayClick = (day) => {
+    //     console.log('Selected day:', day.format('YYYY-MM-DD'));
+    // };
 
     const closeModal = () => {
         setIsModalOpen(false);
-        setFormData({
-            title: '',
-            description: '',
-            date: '',
-            time: '',
-        });
     };
 
     return (
@@ -116,24 +179,29 @@ const HomePage = () => {
                 <div className='wrapper-hd-container'>
                     <div className='flex-hr'>
                         <div className='left-hd'>
-                            <h1>{moment().format('MMMM')}</h1>
+                            <h1>Calendar</h1>
                         </div>
                         <div className='center-hd'>
-                            <span>{moment().format('YYYY')}</span>
+                            {/* <span>{moment().format('YYYY')}</span> */}
                         </div>
                         <div className='right-hd'>
                             <div className='flex-hr'>
-                                <button onClick={openModal}>button</button>
-                                <div>data</div>
+                                <button className='add-event' onClick={openModal}><span>add task</span></button>
+                                <div>
+                                    {/* {`<`} */}
+                                    <DatePicker selected={selectedDate} onChange={handleDateChange} dateFormat="MMMM yyyy" showMonthYearPicker showIcon />
+                                    {/* {`>`} */}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </header>
             <main>
-                <div className='wrapper-grid'>
-                    {renderTitles}
-                    {calendarPlace}
+                <div className='wrapper-calendar'>
+                    <div className='grid-calendar'>
+                        {calendarPlace}
+                    </div>
                 </div>
 
             </main>
@@ -144,22 +212,54 @@ const HomePage = () => {
                     </div>
                     <div className='modal-content'>
                         <div className="title">
-                            <label>Title:</label>
-                            <input type="text" name="title" value={formData.title} onChange={handleFormChange} required /></div>
+                            <label htmlFor="text">Title:</label>
+                            <input placeholder='Name' id='text' type="text" name="title" value={formData.title} onChange={handleFormChange} required /></div>
                         <div className="description">
                             <label>Description:</label>
-                            <textarea name="description" value={formData.description} onChange={handleFormChange} required />
+                            <textarea rows="4" cols="22" name="description" value={formData.description} onChange={handleFormChange} />
                         </div>
                         <div className="date">
                             <label>Date:</label>
-                            <DatePicker selected={selectedDate} onChange={handleDateChange} dateFormat="yyyy-MM-dd" />
+                            <DatePicker showIcon selected={selectedDate} onChange={handleDateChange} dateFormat="yyyy-MM-dd" />
                         </div>
                         <div className="time">
                             <label>Time:</label>
-                            <input type="time" name="time" value={formData.time} onChange={handleFormChange} required />
+                            <input type="time" name="time" value={formData.time} onChange={handleFormChange} />
                         </div>
                         <div className="button-container">
-                            <button type="submit">Save</button>
+                            <button onClick={closeModal}><span>Cancel</span></button>
+                            <button type="submit"><span>Save</span></button>
+
+                        </div>
+
+                    </div>
+                </form>
+            </Modal>
+
+            <Modal className='modal' isOpen={isModalEventOpen} onRequestClose={closeEventModal}>
+                <form onSubmit={handleUpdateAllEvents}>
+                    <div className='modal-head'>
+                        <h2>update task</h2>
+                    </div>
+                    <div className='modal-content'>
+                        <div className="title">
+                            <label htmlFor="text">Title:</label>
+                            <input id='text' type="text" name="title" value={updateData.title} onChange={handleFormUpdate} required /></div>
+                        <div className="description">
+                            <label>Description:</label>
+                            <textarea rows="4" cols="22" name="description" value={updateData.description} onChange={handleFormUpdate} required />
+                        </div>
+                        <div className="date">
+                            <label>Date:</label>
+                            <DatePicker value={updateData.date} showIcon selected={selectedDate} onChange={handleDateChange} dateFormat="yyyy-MM-dd" />
+                        </div>
+                        <div className="time">
+                            <label>Time:</label>
+                            <input type="time" name="time" value={updateData.time} onChange={handleFormUpdate} required />
+                        </div>
+                        <div className="button-container">
+                            <button onClick={closeModal}><span>Cancel</span></button>
+                            <button type="submit"><span>Update</span></button>
                         </div>
 
                     </div>
