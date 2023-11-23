@@ -1,8 +1,9 @@
 import CalendarPage from "./components/CalendarPage";
+import OldEventCalendar from "./components/OldEventCalendar";
 
 function App() {
   return (
-    <div className="App">
+    <div className="app">
       <CalendarPage />
     </div>
   );
