@@ -1,9 +1,12 @@
 import styled from 'styled-components';
 
-export const WrapperHdContainer = styled.div`
-padding: 10px 0px;
-line-height: 40px; 
+export const GlobalWrap = styled.div`
+margin: 0px 20px;
+`;
 
+export const WrapperHdContainer = styled.div`
+padding: 10px 20px;
+line-height: 40px; 
 .left-hd {
     margin: 0px 50px;
 }
@@ -86,7 +89,7 @@ export const FlexHrBtw = styled.div`
 
 export const WrapperCalendar = styled.div`
   margin: 10px auto;
-  max-width: fit-content;
+  max-width: 1170px;
 
   .grid-calendar {
     display: grid;
@@ -96,9 +99,10 @@ export const WrapperCalendar = styled.div`
     padding: 1px;
     background-color: black;
 
+
     .wrapper-day {
       position: relative;
-      width: 160px;
+      max-width: 160px;
       min-height: 100px;
       padding: 5px 10px;
       cursor: pointer;
