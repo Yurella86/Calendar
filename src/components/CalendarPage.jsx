@@ -3,13 +3,11 @@ import Modal from 'react-modal';
 import '../style/CalendarPage.scss';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
+import { FlexHrBtw, ModalWindowWrapper, WrapperCalendar, WrapperHdContainer } from "../style/Componnent/StyleComponent";
+import DayItem from './DayItem';
 
-
-// const titleOfDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 const HomePage = () => {
-
-    moment.updateLocale('es', { week: { dow: 1 } })
     const [events, setEvents] = useState([]);
     const [updateEventsTitle, setUpdateEventsTitle] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,21 +26,19 @@ const HomePage = () => {
         time: '',
     });
 
-    useEffect(() => {
-        const storedEvents = JSON.parse(localStorage.getItem('events')) || [];
-        setEvents(storedEvents);
-    }, []);
-
+    const days = []
     const startMomentCalendar = moment(selectedDate).startOf('month').startOf('week');
     const endMomentCalendar = moment(selectedDate).endOf('month').endOf('week');
     const daysInMonth = endMomentCalendar.diff(startMomentCalendar, 'days') + 1;
 
-    const days = []
+    //// Get Evens from localStor ////
+    useEffect(() => {
+        const storedEvents = JSON.parse(localStorage.getItem('events')) || [];
+        setEvents(storedEvents);
+    }, []);
+    //////////////////////////////
 
-    const handleDateChange = (date) => {
-        setSelectedDate(date);
-    };
-
+    //// Get Days from (selectedDate) for calendar place ////
     for (let i = 0; i < daysInMonth; i++) {
         const currentDay = moment(selectedDate).startOf('month').startOf('week').add(i, 'days');
         const dayEvents = events.filter((event) => event.date === currentDay.format('YYYY-MM-DD'));
@@ -53,73 +49,38 @@ const HomePage = () => {
         })
     }
 
-    // ---------- START UPDATE EVENT CARD -----------
-    const handleUpdateEvent = (e) => {
-        const titleEvent = e.target.textContent
-        setUpdateEventsTitle(titleEvent)
-
-        setIsModalEventOpen(true)
-
-        const localEvents = JSON.parse(localStorage.getItem('events')) || [];
-        const resultFiltered = localEvents.filter((e) => `${e.title}` === titleEvent);
-
-        setUpdateData({
-            title: resultFiltered[0].title,
-            description: resultFiltered[0].description,
-            date: resultFiltered[0].date,
-            time: resultFiltered[0].time,
-        });
-    }
-
-    const handleFormUpdate = (e) => {
-        setUpdateData({ ...updateData, [e.target.name]: e.target.value });
-    }
-
-    const handleUpdateAllEvents = (e) => {
-        e.preventDefault();
-
-        const updated = {
-            title: updateData.title,
-            description: updateData.description,
-            date: updateData.date,
-            time: updateData.time,
-            created: 'f',
-        };
-
-        const localEvents = JSON.parse(localStorage.getItem('events')) || [];
-        const resultFiltered = localEvents.filter((e) => `${e.title}` !== updateEventsTitle);
-
-        const updatedEvents = [...resultFiltered, updated];
-        localStorage.setItem('events', JSON.stringify(updatedEvents));
-        setIsModalEventOpen(false)
-        setEvents(updatedEvents);
-    }
-
-    const hendleDeleteEvent = () => {
-        const localEvents = JSON.parse(localStorage.getItem('events'))
-        const resultFiltered = localEvents.filter((e) => `${e.title}` !== updateEventsTitle);
-        localStorage.setItem('events', JSON.stringify(resultFiltered));
-        setIsModalEventOpen(false)
-        setEvents(resultFiltered);
-    }
-    // ---------- END UPDATE EVENT CARD -----------
-
-    const calendarPlace = days.map(({ fullDate, events }, index) =>
-        <div key={index} className={`wrapper-day ${fullDate.format('d') === "6" || fullDate.format('d') === "0" ? 'weekend' : ''}${fullDate.format('M') !== moment(selectedDate).format('M') ? ' out-of-month' : ''}${fullDate.format('YYYY-MM-DD') === moment().format('YYYY-MM-DD') ? 'current' : ''}`}>
-            <div className={`number`}>
-                <div className='flex-hr'>
-                    <span>{fullDate.format('D')}</span>
-                    <span>{fullDate.format('ddd')}</span>
-                </div>
-            </div>
-            <div className='events-items'>
-                {events.map((event, index) => <div key={index} className='event' onClick={handleUpdateEvent}>{event.title}</div>)}
-            </div>
-        </div >
+    const calendarPlace = days.map(({ fullDate, events }, index) => (
+        <DayItem
+            key={index}
+            fullDate={fullDate}
+            events={events}
+            handleUpdateEvent={(e) => handleUpdateEvent(e)}
+            selectedDate={selectedDate}
+        />
     )
+    )
+    //////////////////////////////
 
-    // const renderTitles = titleOfDays.map(title => <div className='title'>{title}</div>)
 
+    //------------------------ Handle Events -------------------------
+    //// Handle Change Month In Header ////
+    const handlePrevMonth = () => {
+        debugger
+        const prevMonth = moment(selectedDate).add(-1, 'months');
+        setSelectedDate(prevMonth._d)
+    }
+
+    const handleNextMonth = () => {
+        const nextMonth = moment(selectedDate).add(1, 'months');
+        setSelectedDate(nextMonth._d)
+    }
+
+    const handleDateChange = (date) => {
+        setSelectedDate(date);
+    };
+    //////////////////////////////
+
+    //// Handle Event by form ////
     const handleFormSubmit = (e) => {
         e.preventDefault();
 
@@ -148,6 +109,57 @@ const HomePage = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     }
 
+    const handleUpdateEvent = (e) => {
+        const titleEvent = e.target.textContent
+        setUpdateEventsTitle(titleEvent)
+
+        setIsModalEventOpen(true)
+
+        const localEvents = JSON.parse(localStorage.getItem('events')) || [];
+        const resultFiltered = localEvents.filter((e) => `${e.title}` === titleEvent);
+
+        setUpdateData({
+            title: resultFiltered[0].title,
+            description: resultFiltered[0].description,
+            date: resultFiltered[0].date,
+            time: resultFiltered[0].time,
+        });
+    }
+
+    const handleUpdateAllEvents = (e) => {
+        e.preventDefault();
+
+        const updated = {
+            title: updateData.title,
+            description: updateData.description,
+            date: updateData.date,
+            time: updateData.time,
+            created: 'f',
+        };
+
+        const localEvents = JSON.parse(localStorage.getItem('events')) || [];
+        const resultFiltered = localEvents.filter((e) => `${e.title}` !== updateEventsTitle);
+
+        const updatedEvents = [...resultFiltered, updated];
+        localStorage.setItem('events', JSON.stringify(updatedEvents));
+        setIsModalEventOpen(false)
+        setEvents(updatedEvents);
+    }
+
+    const handleFormUpdate = (e) => {
+        setUpdateData({ ...updateData, [e.target.name]: e.target.value });
+    }
+
+    const hendleDeleteEvent = () => {
+        const localEvents = JSON.parse(localStorage.getItem('events'))
+        const resultFiltered = localEvents.filter((e) => `${e.title}` !== updateEventsTitle);
+        localStorage.setItem('events', JSON.stringify(resultFiltered));
+        setIsModalEventOpen(false)
+        setEvents(resultFiltered);
+    }
+    //////////////////////////////
+
+    //// Handle Opening Modal  ////
     const openModal = () => {
         setIsModalOpen(true);
     };
@@ -160,19 +172,9 @@ const HomePage = () => {
         setIsModalOpen(false);
         setIsModalEventOpen(false)
     };
+    //////////////////////////////
 
-    const handlePrevMonth = () => {
-        debugger
-        const prevMonth = moment(selectedDate).add(-1, 'months');
-        setSelectedDate(prevMonth._d)
-    }
-
-    const handleNextMonth = () => {
-        const nextMonth = moment(selectedDate).add(1, 'months');
-        setSelectedDate(nextMonth._d)
-    }
-
-    //---------------custom data picker----------------
+    //// Custom Data Picker  ////
     const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
         <div className='flex-hr'>
             <strong onClick={handlePrevMonth} className='arrow left-arrow'>{`<`}</strong>
@@ -182,18 +184,15 @@ const HomePage = () => {
             <strong onClick={handleNextMonth} className='arrow right-arrow'>{`>`}</strong>
         </div>
     ));
-    //--------------- end custom data picker----------------
+    //////////////////////////////
 
     return (
-        <div className='wrapper-calendar'>
+        <WrapperCalendar>
             <header>
-                <div className='wrapper-hd-container'>
-                    <div className='flex-hr'>
+                <WrapperHdContainer>
+                    <FlexHrBtw>
                         <div className='left-hd'>
                             <h1>Calendar</h1>
-                        </div>
-                        <div className='center-hd'>
-                            {/* <span>{moment().format('YYYY')}</span> */}
                         </div>
                         <div className='right-hd'>
                             <div className='flex-hr'>
@@ -209,74 +208,107 @@ const HomePage = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </FlexHrBtw>
+                </WrapperHdContainer>
             </header>
             <main>
-                <div className='wrapper-calendar'>
+                <WrapperCalendar>
                     <div className='grid-calendar'>
                         {calendarPlace}
                     </div>
-                </div>
+                </WrapperCalendar>
 
             </main>
             <Modal className='modal' isOpen={isModalOpen} onRequestClose={closeModal}>
-                <form onSubmit={handleFormSubmit}>
-                    <div className='modal-head'>
-                        <h2>add new task</h2>
-                    </div>
-                    <div className='exit' onClick={closeModal}>
-                    </div>
-                    <div className='modal-content'>
-                        <div className="title">
-                            <input placeholder='Title' id='text' type="text" name="title" value={formData.title} onChange={handleFormChange} required /></div>
-                        <div className="description">
-                            <textarea placeholder='Description' rows="4" cols="22" name="description" value={formData.description} onChange={handleFormChange} />
+                <ModalWindowWrapper>
+                    <form onSubmit={handleFormSubmit}>
+                        <div className='modal-head'>
+                            <h2>add new task</h2>
                         </div>
-                        <div className="date">
-                            <label>Date:</label>
-                            <DatePicker selected={selectedDate} onChange={handleDateChange} dateFormat="yyyy-MM-dd" />
+                        <div className='exit' onClick={closeModal}>
                         </div>
-                        <div className="time">
-                            <label>Time:</label>
-                            <input type="time" name="time" value={formData.time} onChange={handleFormChange} />
+                        <div className='modal-content'>
+                            <div className="title">
+                                <input
+                                    placeholder='Title'
+                                    id='text'
+                                    type="text"
+                                    name="title"
+                                    value={formData.title}
+                                    onChange={handleFormChange}
+                                    required /></div>
+                            <div className="description">
+                                <textarea
+                                    placeholder='Description'
+                                    rows="4"
+                                    cols="22"
+                                    name="description"
+                                    value={formData.description}
+                                    onChange={handleFormChange} />
+                            </div>
+                            <div className="date">
+                                <label>Date:</label>
+                                <DatePicker
+                                    selected={selectedDate}
+                                    onChange={handleDateChange}
+                                    dateFormat="yyyy-MM-dd" />
+                            </div>
+                            <div className="time">
+                                <label>Time:</label>
+                                <input type="time" name="time" value={formData.time} onChange={handleFormChange} />
+                            </div>
+                            <div className="button-container">
+                                <button type="submit"><span>Save</span></button>
+                            </div>
                         </div>
-                        <div className="button-container">
-                            <button type="submit"><span>Save</span></button>
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                </ModalWindowWrapper>
             </Modal>
 
             <Modal className='modal' isOpen={isModalEventOpen} onRequestClose={closeEventModal}>
-                <form onSubmit={handleUpdateAllEvents}>
-                    <div className='modal-head'>
-                        <h2>update task</h2>
-                    </div>
-                    <div className='exit' onClick={closeModal}>
-                    </div>
-                    <div className='modal-content'>
-                        <div className="title">
-                            <input placeholder='Title' id='text' type="text" name="title" value={updateData.title} onChange={handleFormUpdate} required /></div>
-                        <div className="description">
-                            <textarea placeholder='Description' rows="4" cols="22" name="description" value={updateData.description} onChange={handleFormUpdate} required />
+                <ModalWindowWrapper>
+                    <form onSubmit={handleUpdateAllEvents}>
+                        <div className='modal-head'>
+                            <h2>update task</h2>
                         </div>
-                        <div className="date">
-                            <label>Date:</label>
-                            <DatePicker value={updateData.date} selected={selectedDate} onChange={handleDateChange} dateFormat="yyyy-MM-dd" />
+                        <div className='exit' onClick={closeModal}>
                         </div>
-                        <div className="time">
-                            <label>Time:</label>
-                            <input type="time" name="time" value={updateData.time} onChange={handleFormUpdate} />
+                        <div className='modal-content'>
+                            <div className="title">
+                                <input
+                                    placeholder='Title'
+                                    id='text'
+                                    type="text"
+                                    name="title"
+                                    value={updateData.title}
+                                    onChange={handleFormUpdate}
+                                    required /></div>
+                            <div className="description">
+                                <textarea
+                                    placeholder='Description'
+                                    rows="4" cols="22"
+                                    name="description"
+                                    value={updateData.description}
+                                    onChange={handleFormUpdate}
+                                    required />
+                            </div>
+                            <div className="date">
+                                <label>Date:</label>
+                                <DatePicker value={updateData.date} selected={selectedDate} onChange={handleDateChange} dateFormat="yyyy-MM-dd" />
+                            </div>
+                            <div className="time">
+                                <label>Time:</label>
+                                <input type="time" name="time" value={updateData.time} onChange={handleFormUpdate} />
+                            </div>
+                            <div className="button-container">
+                                <button onClick={hendleDeleteEvent} className='delete'><span>Delete</span></button>
+                                <button type="submit"><span>Update</span></button>
+                            </div>
                         </div>
-                        <div className="button-container">
-                            <button onClick={hendleDeleteEvent} className='delete'><span>Delete</span></button>
-                            <button type="submit"><span>Update</span></button>
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                </ModalWindowWrapper>
             </Modal>
-        </div>
+        </WrapperCalendar>
     );
 };
 
