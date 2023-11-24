@@ -38,6 +38,10 @@
         justify-content: start;
     }
 
+    .left-hd {
+        margin: 0px 50px;
+    }
+
     .center-hd {
         flex-grow: 1;
         text-align: center;
@@ -69,6 +73,19 @@
                 text-transform: capitalize;
             }
         }
+
+        .arrow {
+            display: inline-block;
+            width: max-content;
+            cursor: pointer;
+        }
+
+        .example-custom-input {
+            width: 120px;
+            padding: 0 10px;
+            background-color: transparent;
+            display: block;
+        }
     }
 
     .react-datepicker-popper {
@@ -93,10 +110,6 @@
     .react-datepicker {
         right: 50px !important;
     }
-}
-
-.left-hd {
-    margin: 0px 50px;
 }
 
 .flex-hr {
@@ -173,57 +186,44 @@
     z-index: 100;
 }
 
+// ------------- Modal Window ---------------
 .modal {
     position: relative;
     z-index: 100;
     background-color: white;
-    top: 40%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     max-width: 300px;
     box-shadow: 0 0 10px grey;
+    padding: 10px;
 
     .modal-head {
         text-align: center;
         text-transform: capitalize;
     }
+
     .modal-content {
         padding: 10px 20px;
 
         & > div {
-            margin: 5px 10px;
+            margin: 5px auto;
             line-height: 30px;
         }
-
-        .react-datepicker-wrapper {
-            margin: 0 auto;
-
-            .react-datepicker__calendar-icon {
-                line-height: 24px;
-                right: 0;
-                padding: 10px;
-            }
-        }
-        .react-datepicker__view-calendar-icon input {
-            padding: 0;
-        }
     }
 
-    .description {
-        label {
-            vertical-align: top;
-        }
-    }
-
-    input {
+    .title input {
         border-bottom: 1px inset black;
     }
+
     textarea {
-        border: 1px inset black;
+        background-color: rgb(233, 233, 250);
+        border-radius: 5px;
     }
 
-    input,
+    .title input,
     textarea {
+        width: 100%;
         line-height: 26px;
         font-size: 16px;
         padding: 0 5px;
@@ -231,13 +231,27 @@
 
     label {
         display: inline-block;
-        min-width: 100px;
+        min-width: 50px;
+        margin-right: 10px;
+    }
 
-        margin: 0 10px;
+    .react-datepicker-wrapper {
+        width: 50%;
+        margin: 0 auto;
+
+        .react-datepicker__calendar-icon {
+            line-height: 24px;
+            right: 0;
+            padding: 10px;
+        }
+    }
+
+    .react-datepicker__view-calendar-icon input {
+        padding: 0;
     }
 
     .button-container {
-        margin: 50px auto !important;
+        margin: 30px auto 10px !important;
         display: flex;
         justify-content: space-around;
         flex-direction: row;
@@ -255,10 +269,22 @@
                 color: white;
                 background-color: rgb(92, 109, 156);
             }
+
+            &.delete {
+                background-color: rgb(160, 27, 27);
+                color: white;
+
+                &:hover {
+                    color: white;
+                    background-color: rgb(121, 21, 21);
+                }
+            }
         }
     }
 }
+// ------------- END Modal Window ---------------
 
+// ------------- Event --------------
 .events-items {
     max-height: 70px;
     overflow-y: auto;
@@ -277,6 +303,7 @@
         }
     }
 }
+// ------------- END Event --------------
 
 @media screen and (max-width: 991px) {
     .wrapper-grid {

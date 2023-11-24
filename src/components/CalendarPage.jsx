@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import '../style/CalendarPage.scss';
 import moment from 'moment';
@@ -106,6 +106,18 @@ const HomePage = () => {
         localStorage.setItem('events', JSON.stringify(updatedEvents));
         setIsModalEventOpen(false)
         setEvents(updatedEvents);
+    }
+
+    const hendleDeleteEvent = () => {
+        console.log(updateEventsTitle);
+
+        const localEvents = JSON.parse(localStorage.getItem('events'))
+        const resultFiltered = localEvents.filter((e) => `${e.title}` !== updateEventsTitle);
+        localStorage.setItem('events', JSON.stringify(resultFiltered));
+        setIsModalEventOpen(false)
+        setEvents(resultFiltered);
+
+        console.log(resultFiltered);
 
     }
     // ---------- END UPDATE EVENT CARD -----------
@@ -173,6 +185,29 @@ const HomePage = () => {
         setIsModalOpen(false);
     };
 
+    const handlePrevMonth = () => {
+        debugger
+        const prevMonth = moment(selectedDate).add(-1, 'months');
+        setSelectedDate(prevMonth._d)
+    }
+
+    const handleNextMonth = () => {
+        const nextMonth = moment(selectedDate).add(1, 'months');
+        setSelectedDate(nextMonth._d)
+    }
+
+    //---------------custom data picker----------------
+    const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
+        <div className='flex-hr'>
+            <strong onClick={handlePrevMonth} className='arrow left-arrow'>{`<`}</strong>
+            <button className="example-custom-input" onClick={onClick} ref={ref}>
+                {value}
+            </button>
+            <strong onClick={handleNextMonth} className='arrow right-arrow'>{`>`}</strong>
+        </div>
+    ));
+    //--------------- end custom data picker----------------
+
     return (
         <div className='wrapper-calendar'>
             <header>
@@ -188,9 +223,13 @@ const HomePage = () => {
                             <div className='flex-hr'>
                                 <button className='add-event' onClick={openModal}><span>add task</span></button>
                                 <div>
-                                    {/* {`<`} */}
-                                    <DatePicker selected={selectedDate} onChange={handleDateChange} dateFormat="MMMM yyyy" showMonthYearPicker showIcon />
-                                    {/* {`>`} */}
+                                    <DatePicker
+                                        showMonthYearPicker
+                                        selected={selectedDate}
+                                        onChange={handleDateChange}
+                                        dateFormat="MMMM yyyy"
+                                        customInput={<ExampleCustomInput />}
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -212,15 +251,13 @@ const HomePage = () => {
                     </div>
                     <div className='modal-content'>
                         <div className="title">
-                            <label htmlFor="text">Title:</label>
-                            <input placeholder='Name' id='text' type="text" name="title" value={formData.title} onChange={handleFormChange} required /></div>
+                            <input placeholder='Title' id='text' type="text" name="title" value={formData.title} onChange={handleFormChange} required /></div>
                         <div className="description">
-                            <label>Description:</label>
-                            <textarea rows="4" cols="22" name="description" value={formData.description} onChange={handleFormChange} />
+                            <textarea placeholder='Description' rows="4" cols="22" name="description" value={formData.description} onChange={handleFormChange} />
                         </div>
                         <div className="date">
                             <label>Date:</label>
-                            <DatePicker showIcon selected={selectedDate} onChange={handleDateChange} dateFormat="yyyy-MM-dd" />
+                            <DatePicker selected={selectedDate} onChange={handleDateChange} dateFormat="yyyy-MM-dd" />
                         </div>
                         <div className="time">
                             <label>Time:</label>
@@ -243,25 +280,22 @@ const HomePage = () => {
                     </div>
                     <div className='modal-content'>
                         <div className="title">
-                            <label htmlFor="text">Title:</label>
-                            <input id='text' type="text" name="title" value={updateData.title} onChange={handleFormUpdate} required /></div>
+                            <input placeholder='Title' id='text' type="text" name="title" value={updateData.title} onChange={handleFormUpdate} required /></div>
                         <div className="description">
-                            <label>Description:</label>
-                            <textarea rows="4" cols="22" name="description" value={updateData.description} onChange={handleFormUpdate} required />
+                            <textarea placeholder='Description' rows="4" cols="22" name="description" value={updateData.description} onChange={handleFormUpdate} required />
                         </div>
                         <div className="date">
                             <label>Date:</label>
-                            <DatePicker value={updateData.date} showIcon selected={selectedDate} onChange={handleDateChange} dateFormat="yyyy-MM-dd" />
+                            <DatePicker value={updateData.date} selected={selectedDate} onChange={handleDateChange} dateFormat="yyyy-MM-dd" />
                         </div>
                         <div className="time">
                             <label>Time:</label>
                             <input type="time" name="time" value={updateData.time} onChange={handleFormUpdate} required />
                         </div>
                         <div className="button-container">
-                            <button onClick={closeModal}><span>Cancel</span></button>
+                            <button onClick={hendleDeleteEvent} className='delete'><span>Delete</span></button>
                             <button type="submit"><span>Update</span></button>
                         </div>
-
                     </div>
                 </form>
             </Modal>
