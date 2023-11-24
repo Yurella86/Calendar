@@ -97,7 +97,7 @@
         transform: translateY(-50%);
     }
     .react-datepicker__triangle {
-        left: 112px !important;
+        left: 55px !important;
     }
     .react-datepicker__view-calendar-icon input {
         position: relative;
@@ -148,7 +148,7 @@
 
             &:hover:not(.out-of-month) {
                 z-index: 11;
-                transform: scale(1.4, 1.4);
+                transform: scale(1.1, 1.1);
                 transition: all 0.2s ease;
                 border: none;
                 box-shadow: 0px 0px 10px rgb(148, 148, 148);
@@ -201,6 +201,42 @@
     .modal-head {
         text-align: center;
         text-transform: capitalize;
+    }
+
+    .exit {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        cursor: pointer;
+        border: 1px solid transparent;
+
+        &:hover {
+            border: 1px solid black;
+            border-radius: 50%;
+        }
+
+        &::before,
+        &::after {
+            display: inline-block;
+            position: relative;
+            content: " ";
+            width: 10px;
+            height: 2px;
+            border-radius: 1px;
+            background-color: black;
+        }
+
+        &::before {
+            top: -5px;
+            left: 5px;
+            transform: rotate(-45deg);
+        }
+
+        &::after {
+            top: -5px;
+            left: -5px;
+            transform: rotate(45deg);
+        }
     }
 
     .modal-content {

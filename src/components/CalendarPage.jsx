@@ -33,21 +33,9 @@ const HomePage = () => {
         setEvents(storedEvents);
     }, []);
 
-    // useEffect(() => {
-    //     const storedEvents = JSON.parse(localStorage.getItem('events')) || [];
-    //     setEvents(storedEvents);
-    // }, [events]);
-
-    // console.log(moment(selectedDate).startOf('month').startOf('week'));
-    // console.log('selectedDate => ' + selectedDate.getMonth());
-
     const startMomentCalendar = moment(selectedDate).startOf('month').startOf('week');
     const endMomentCalendar = moment(selectedDate).endOf('month').endOf('week');
     const daysInMonth = endMomentCalendar.diff(startMomentCalendar, 'days') + 1;
-
-    // console.log('startMomentCalendar => ' + startMomentCalendar.format());
-    // console.log('endMomentCalendar => ' + endMomentCalendar.format());
-    // console.log('daysInMonth =>' + daysInMonth);
 
     const days = []
 
@@ -81,7 +69,6 @@ const HomePage = () => {
             date: resultFiltered[0].date,
             time: resultFiltered[0].time,
         });
-        console.log("updateData =>" + updateData.date);
     }
 
     const handleFormUpdate = (e) => {
@@ -109,16 +96,11 @@ const HomePage = () => {
     }
 
     const hendleDeleteEvent = () => {
-        console.log(updateEventsTitle);
-
         const localEvents = JSON.parse(localStorage.getItem('events'))
         const resultFiltered = localEvents.filter((e) => `${e.title}` !== updateEventsTitle);
         localStorage.setItem('events', JSON.stringify(resultFiltered));
         setIsModalEventOpen(false)
         setEvents(resultFiltered);
-
-        console.log(resultFiltered);
-
     }
     // ---------- END UPDATE EVENT CARD -----------
 
@@ -160,13 +142,10 @@ const HomePage = () => {
             time: '',
         });
         setIsModalOpen(false);
-
-        console.log(formData);
     }
 
     const handleFormChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
-        console.log(formData);
     }
 
     const openModal = () => {
@@ -177,12 +156,9 @@ const HomePage = () => {
         setIsModalEventOpen(false)
     }
 
-    // const handleDayClick = (day) => {
-    //     console.log('Selected day:', day.format('YYYY-MM-DD'));
-    // };
-
     const closeModal = () => {
         setIsModalOpen(false);
+        setIsModalEventOpen(false)
     };
 
     const handlePrevMonth = () => {
@@ -249,6 +225,8 @@ const HomePage = () => {
                     <div className='modal-head'>
                         <h2>add new task</h2>
                     </div>
+                    <div className='exit' onClick={closeModal}>
+                    </div>
                     <div className='modal-content'>
                         <div className="title">
                             <input placeholder='Title' id='text' type="text" name="title" value={formData.title} onChange={handleFormChange} required /></div>
@@ -264,11 +242,8 @@ const HomePage = () => {
                             <input type="time" name="time" value={formData.time} onChange={handleFormChange} />
                         </div>
                         <div className="button-container">
-                            <button onClick={closeModal}><span>Cancel</span></button>
                             <button type="submit"><span>Save</span></button>
-
                         </div>
-
                     </div>
                 </form>
             </Modal>
@@ -277,6 +252,8 @@ const HomePage = () => {
                 <form onSubmit={handleUpdateAllEvents}>
                     <div className='modal-head'>
                         <h2>update task</h2>
+                    </div>
+                    <div className='exit' onClick={closeModal}>
                     </div>
                     <div className='modal-content'>
                         <div className="title">
@@ -290,7 +267,7 @@ const HomePage = () => {
                         </div>
                         <div className="time">
                             <label>Time:</label>
-                            <input type="time" name="time" value={updateData.time} onChange={handleFormUpdate} required />
+                            <input type="time" name="time" value={updateData.time} onChange={handleFormUpdate} />
                         </div>
                         <div className="button-container">
                             <button onClick={hendleDeleteEvent} className='delete'><span>Delete</span></button>
