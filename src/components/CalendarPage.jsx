@@ -1,8 +1,9 @@
 import React, { forwardRef, useEffect, useState } from 'react';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 import Modal from 'react-modal';
 import '../style/CalendarPage.scss';
 import moment from 'moment';
-import DatePicker from 'react-datepicker';
 import { FlexHrBtw, ModalWindowWrapper, WrapperCalendar, WrapperHdContainer } from "../style/Componnent/StyleComponent";
 import DayItem from './DayItem';
 
