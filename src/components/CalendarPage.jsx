@@ -65,7 +65,6 @@ const HomePage = () => {
     //------------------------ Handle Events -------------------------
     //// Handle Change Month In Header ////
     const handlePrevMonth = () => {
-        debugger
         const prevMonth = moment(selectedDate).add(-1, 'months');
         setSelectedDate(prevMonth._d)
     }
