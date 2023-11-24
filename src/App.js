@@ -1,5 +1,4 @@
 import CalendarPage from "./components/CalendarPage";
-import OldEventCalendar from "./components/OldEventCalendar";
 
 function App() {
   return (
