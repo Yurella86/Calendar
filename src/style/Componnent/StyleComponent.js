@@ -92,10 +92,20 @@ export const WrapperCalendar = styled.div`
     height: 100vh;
     background-color: rgb(43, 43, 43);
 
+    .add-event {
+      background-color:rgb(75 75 75);
+      &:hover{
+        color: #333;
+        background-color:rgb(156 156 156);
+      }
+    }
+
     .left-hd,
     .react-datepicker-wrapper,
     .example-custom-input,
-    .grid-calendar .wrapper-day {
+    .grid-calendar .wrapper-day,
+    .event:hover,
+    .add-event {
       color: white;
     }
     
@@ -109,8 +119,12 @@ export const WrapperCalendar = styled.div`
       background-color:rgb(75 75 75);
     }
 
-    .grid-calendar .wrapper-day.weekend {
+    .grid-calendar .wrapper-day.weekend,
+    .event {
       background-color:rgb(58 58 58);
+      &:hover {
+        outline: 1px solid white;
+      }
     }
 
     .grid-calendar .wrapper-day.current {
