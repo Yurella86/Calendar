@@ -1,13 +1,16 @@
 .event {
+    position: relative;
     background-color: rgb(63, 63, 83);
     border-radius: 4px;
     margin: 2px 5px;
     color: white;
     font-size: 10px;
     padding: 5px;
+    outline: none;
 
     &:hover {
-        border: 1px solid rgb(63, 63, 83);
+        box-sizing: border-box;
+        outline: 1px solid rgb(63, 63, 83);
         background-color: rgb(228, 228, 228);
         color: rgb(0, 0, 34);
     }
