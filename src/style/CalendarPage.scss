@@ -28,6 +28,10 @@
     &:focus {
         outline: none;
     }
+
+    &body {
+        height: 100%;
+    }
 }
 
 .flex-hr {
@@ -68,6 +72,91 @@
     }
 }
 // ------------- END Modal Window ---------------
+// ------------- Theme BTN ---------------
+
+.theme-btn {
+    width: 40px;
+    height: 20px;
+    margin: 0 40px;
+    position: relative;
+    cursor: pointer;
+
+    &::before {
+        position: absolute;
+        content: " ";
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        box-sizing: border-box;
+    }
+
+    &.light {
+        &::before {
+            border: 1px solid black;
+            background-color: white;
+            top: -2px;
+            transform: translateX(-5px);
+            transition: transform 0.2s ease;
+        }
+        .light {
+            display: none;
+        }
+        .dark {
+            display: block;
+        }
+    }
+
+    &.dark {
+        &::before {
+            border: 1px solid white;
+            background-color: black;
+            top: -2px;
+            transform: translateX(25px);
+            transition: transform 0.2s ease;
+        }
+
+        .light {
+            display: block;
+        }
+        .dark {
+            display: none;
+        }
+    }
+
+    div.flex-hr {
+        justify-content: space-between;
+        height: inherit;
+    }
+
+    .light {
+        background-image: url("../image/light.png");
+        background-size: 100% 100%;
+        width: 100%;
+        height: inherit;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .dark {
+        background-image: url("../image/dark.png");
+        background-size: 100% 100%;
+        width: 100%;
+        height: inherit;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        max-width: 1170px;
+    }
+}
+
+body {
+    height: 100%;
+}
+
+// ------------- END Theme BTN ---------------
 
 @media screen and (max-width: 991px) {
     .wrapper-grid {
