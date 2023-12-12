@@ -88,8 +88,35 @@ export const FlexHrBtw = styled.div`
 `;
 
 export const WrapperCalendar = styled.div`
-  margin: 10px auto;
-  max-width: 1170px;
+  &.dark {
+    height: 100vh;
+    background-color: rgb(43, 43, 43);
+
+    .left-hd,
+    .react-datepicker-wrapper,
+    .example-custom-input,
+    .grid-calendar .wrapper-day {
+      color: white;
+    }
+    
+    .grid-calendar{
+      .wrapper-day.out-of-month {
+        color: rgb(75 75 75);
+        background-color:rgb(54 54 54);
+      }
+    }
+    .grid-calendar .wrapper-day {
+      background-color:rgb(75 75 75);
+    }
+
+    .grid-calendar .wrapper-day.weekend {
+      background-color:rgb(58 58 58);
+    }
+
+    .grid-calendar .wrapper-day.current {
+      background-color:#8b8b8b;
+    }
+  }
 
   .grid-calendar {
     display: grid;
@@ -146,7 +173,11 @@ export const WrapperCalendar = styled.div`
     }
   }
 `;
-
+export const CalendarContainer = styled.div`
+margin: 0px auto;
+max-width: 1170px;
+height: 100%;
+`;
 export const ModalWindowWrapper = styled.div`
   .modal-head {
     text-align: center;
@@ -258,5 +289,3 @@ export const EventsStyleItems = styled.div`
   max-height: 70px;
   overflow-y: auto;
 `;
-
-

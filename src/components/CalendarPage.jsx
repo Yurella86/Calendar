@@ -4,12 +4,13 @@ import "react-datepicker/dist/react-datepicker.css";
 import Modal from 'react-modal';
 import '../style/CalendarPage.scss';
 import moment from 'moment';
-import { FlexHrBtw, ModalWindowWrapper, WrapperCalendar, WrapperHdContainer } from "../style/Componnent/StyleComponent";
+import { CalendarContainer, FlexHrBtw, ModalWindowWrapper, WrapperCalendar, WrapperHdContainer } from "../style/Componnent/StyleComponent";
 import DayItem from './DayItem';
 
 
 const HomePage = () => {
     const [events, setEvents] = useState([]);
+    const [isLightTheme, setIsLightTheme] = useState();
     const [updateEventsTitle, setUpdateEventsTitle] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalEventOpen, setIsModalEventOpen] = useState(false);
@@ -32,16 +33,29 @@ const HomePage = () => {
     const endMomentCalendar = moment(selectedDate).endOf('month').endOf('week');
     const daysInMonth = endMomentCalendar.diff(startMomentCalendar, 'days') + 1;
 
+    const changeTheme = () => {
+        localStorage.setItem('light-theme', JSON.stringify(!isLightTheme))
+        setIsLightTheme(!isLightTheme)
+        console.log('changed => ' + isLightTheme);
+    }
+
     //// Get Evens from localStor ////
     useEffect(() => {
+        const theme = JSON.parse(localStorage.getItem('light-theme'))
         const storedEvents = JSON.parse(localStorage.getItem('events')) || [];
+        if (theme === null) {
+            setIsLightTheme(true);
+        } else {
+            setIsLightTheme(theme)
+        }
+        console.log('first => ' + theme);
         setEvents(storedEvents);
     }, []);
     //////////////////////////////
 
     //// Get Days from (selectedDate) for calendar place ////
     for (let i = 0; i < daysInMonth; i++) {
-        const currentDay = moment(selectedDate).startOf('month').startOf('week').add(i, 'days');
+        const currentDay = moment(selectedDate).startOf('month').startOf('week').add(i, 'days').subtract(-1, 'day');
         const dayEvents = events.filter((event) => event.date === currentDay.format('YYYY-MM-DD'));
 
         days.push({
@@ -187,127 +201,138 @@ const HomePage = () => {
     //////////////////////////////
 
     return (
-        <WrapperCalendar>
-            <header>
-                <WrapperHdContainer>
-                    <FlexHrBtw>
-                        <div className='left-hd'>
-                            <h1>Calendar</h1>
-                        </div>
-                        <div className='right-hd'>
-                            <div className='flex-hr'>
-                                <button className='add-event' onClick={openModal}><span>add task</span></button>
-                                <div>
-                                    <DatePicker
-                                        showMonthYearPicker
-                                        selected={selectedDate}
-                                        onChange={handleDateChange}
-                                        dateFormat="MMMM yyyy"
-                                        customInput={<ExampleCustomInput />}
-                                    />
+
+        <WrapperCalendar className={`${isLightTheme ? 'light' : 'dark'}`}>
+            <CalendarContainer>
+                <header>
+                    <WrapperHdContainer>
+                        <FlexHrBtw>
+                            <div className='left-hd'>
+                                <h1>Calendar</h1>
+                            </div>
+                            <div className='right-hd'>
+                                <div className='flex-hr'>
+                                    <div className={`theme-btn ${isLightTheme ? 'light' : 'dark'}`} onClick={changeTheme}>
+                                        <div className='flex-hr'>
+                                            <div className='light'>
+                                            </div>
+                                            <div className="dark">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button className='add-event' onClick={openModal}><span>add task</span></button>
+                                    <div>
+                                        <DatePicker
+                                            showMonthYearPicker
+                                            selected={selectedDate}
+                                            onChange={handleDateChange}
+                                            dateFormat="MMMM yyyy"
+                                            customInput={<ExampleCustomInput />}
+                                        />
+                                    </div>
                                 </div>
                             </div>
+                        </FlexHrBtw>
+                    </WrapperHdContainer>
+                </header>
+                <main>
+                    <WrapperCalendar>
+                        <div className='grid-calendar'>
+                            {calendarPlace}
                         </div>
-                    </FlexHrBtw>
-                </WrapperHdContainer>
-            </header>
-            <main>
-                <WrapperCalendar>
-                    <div className='grid-calendar'>
-                        {calendarPlace}
-                    </div>
-                </WrapperCalendar>
+                    </WrapperCalendar>
 
-            </main>
-            <Modal className='modal' isOpen={isModalOpen} onRequestClose={closeModal}>
-                <ModalWindowWrapper>
-                    <form onSubmit={handleFormSubmit}>
-                        <div className='modal-head'>
-                            <h2>add new task</h2>
-                        </div>
-                        <div className='exit' onClick={closeModal}>
-                        </div>
-                        <div className='modal-content'>
-                            <div className="title">
-                                <input
-                                    placeholder='Title'
-                                    id='text'
-                                    type="text"
-                                    name="title"
-                                    value={formData.title}
-                                    onChange={handleFormChange}
-                                    required /></div>
-                            <div className="description">
-                                <textarea
-                                    placeholder='Description'
-                                    rows="4"
-                                    cols="22"
-                                    name="description"
-                                    value={formData.description}
-                                    onChange={handleFormChange} />
+                </main>
+                <Modal className='modal' isOpen={isModalOpen} onRequestClose={closeModal}>
+                    <ModalWindowWrapper>
+                        <form onSubmit={handleFormSubmit}>
+                            <div className='modal-head'>
+                                <h2>add new task</h2>
                             </div>
-                            <div className="date">
-                                <label>Date:</label>
-                                <DatePicker
-                                    selected={selectedDate}
-                                    onChange={handleDateChange}
-                                    dateFormat="yyyy-MM-dd" />
+                            <div className='exit' onClick={closeModal}>
                             </div>
-                            <div className="time">
-                                <label>Time:</label>
-                                <input type="time" name="time" value={formData.time} onChange={handleFormChange} />
+                            <div className='modal-content'>
+                                <div className="title">
+                                    <input
+                                        placeholder='Title'
+                                        id='text'
+                                        type="text"
+                                        name="title"
+                                        value={formData.title}
+                                        onChange={handleFormChange}
+                                        required /></div>
+                                <div className="description">
+                                    <textarea
+                                        placeholder='Description'
+                                        rows="4"
+                                        cols="22"
+                                        name="description"
+                                        value={formData.description}
+                                        onChange={handleFormChange} />
+                                </div>
+                                <div className="date">
+                                    <label>Date:</label>
+                                    <DatePicker
+                                        selected={selectedDate}
+                                        onChange={handleDateChange}
+                                        dateFormat="yyyy-MM-dd" />
+                                </div>
+                                <div className="time">
+                                    <label>Time:</label>
+                                    <input type="time" name="time" value={formData.time} onChange={handleFormChange} />
+                                </div>
+                                <div className="button-container">
+                                    <button type="submit"><span>Save</span></button>
+                                </div>
                             </div>
-                            <div className="button-container">
-                                <button type="submit"><span>Save</span></button>
-                            </div>
-                        </div>
-                    </form>
-                </ModalWindowWrapper>
-            </Modal>
+                        </form>
+                    </ModalWindowWrapper>
+                </Modal>
 
-            <Modal className='modal' isOpen={isModalEventOpen} onRequestClose={closeEventModal}>
-                <ModalWindowWrapper>
-                    <form onSubmit={handleUpdateAllEvents}>
-                        <div className='modal-head'>
-                            <h2>update task</h2>
-                        </div>
-                        <div className='exit' onClick={closeModal}>
-                        </div>
-                        <div className='modal-content'>
-                            <div className="title">
-                                <input
-                                    placeholder='Title'
-                                    id='text'
-                                    type="text"
-                                    name="title"
-                                    value={updateData.title}
-                                    onChange={handleFormUpdate}
-                                    required /></div>
-                            <div className="description">
-                                <textarea
-                                    placeholder='Description'
-                                    rows="4" cols="22"
-                                    name="description"
-                                    value={updateData.description}
-                                    onChange={handleFormUpdate}
-                                    required />
+                <Modal className='modal' isOpen={isModalEventOpen} onRequestClose={closeEventModal}>
+                    <ModalWindowWrapper>
+                        <form onSubmit={handleUpdateAllEvents}>
+                            <div className='modal-head'>
+                                <h2>update task</h2>
                             </div>
-                            <div className="date">
-                                <label>Date:</label>
-                                <DatePicker value={updateData.date} selected={selectedDate} onChange={handleDateChange} dateFormat="yyyy-MM-dd" />
+                            <div className='exit' onClick={closeModal}>
                             </div>
-                            <div className="time">
-                                <label>Time:</label>
-                                <input type="time" name="time" value={updateData.time} onChange={handleFormUpdate} />
+                            <div className='modal-content'>
+                                <div className="title">
+                                    <input
+                                        placeholder='Title'
+                                        id='text'
+                                        type="text"
+                                        name="title"
+                                        value={updateData.title}
+                                        onChange={handleFormUpdate}
+                                        required /></div>
+                                <div className="description">
+                                    <textarea
+                                        placeholder='Description'
+                                        rows="4" cols="22"
+                                        name="description"
+                                        value={updateData.description}
+                                        onChange={handleFormUpdate}
+                                        required />
+                                </div>
+                                <div className="date">
+                                    <label>Date:</label>
+                                    <DatePicker value={updateData.date} selected={selectedDate} onChange={handleDateChange} dateFormat="yyyy-MM-dd" />
+                                </div>
+                                <div className="time">
+                                    <label>Time:</label>
+                                    <input type="time" name="time" value={updateData.time} onChange={handleFormUpdate} />
+                                </div>
+                                <div className="button-container">
+                                    <button onClick={hendleDeleteEvent} className='delete'><span>Delete</span></button>
+                                    <button type="submit"><span>Update</span></button>
+                                </div>
                             </div>
-                            <div className="button-container">
-                                <button onClick={hendleDeleteEvent} className='delete'><span>Delete</span></button>
-                                <button type="submit"><span>Update</span></button>
-                            </div>
-                        </div>
-                    </form>
-                </ModalWindowWrapper>
-            </Modal>
+                        </form>
+                    </ModalWindowWrapper>
+                </Modal>
+            </CalendarContainer>
         </WrapperCalendar>
     );
 };
