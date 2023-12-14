@@ -155,6 +155,43 @@ body {
     height: 100%;
 }
 
+.dark {
+    background-color: #3c3c3c;
+
+    input,
+    .description textarea {
+        background-color: #3c3c3c;
+        color: white;
+    }
+
+    h2,
+    label{
+        color: white
+    }
+
+    .exit {
+        border: 1px solid rgb(0, 0, 0);
+        
+        &::after, 
+        &::before {
+            background-color: white !important;   
+        }
+
+        &:hover {
+            border: 1px solid white !important;
+        }
+    }
+
+    .modal-content .button-container button {
+        background-color:rgb(75,75,75);
+       
+        &:hover{
+            color: #333;
+            background-color:rgb(156,156,156);
+        }
+    }
+}
+
 // ------------- END Theme BTN ---------------
 
 @media screen and (max-width: 991px) {

@@ -127,8 +127,21 @@ export const WrapperCalendar = styled.div`
       }
     }
 
-    .grid-calendar .wrapper-day.current {
+    .grid-calendar .wrapper-day.current{
       background-color:#8b8b8b;
+    }
+
+    .react-datepicker__month-container,
+    .react-datepicker__header {
+      background-color:#8b8b8b;
+    }
+
+    .react-datepicker__day--keyboard-selected, 
+    .react-datepicker__month-text--keyboard-selected, 
+    .react-datepicker__quarter-text--keyboard-selected, 
+    .react-datepicker__year-text--keyboard-selected {
+      color: white;
+      background-color: rgb(54 54 54);
     }
   }
 
@@ -193,6 +206,7 @@ max-width: 1170px;
 height: 100%;
 `;
 export const ModalWindowWrapper = styled.div`
+
   .modal-head {
     text-align: center;
     text-transform: capitalize;
@@ -298,8 +312,8 @@ export const ModalWindowWrapper = styled.div`
     }
   }
 `;
-
 export const EventsStyleItems = styled.div`
   max-height: 70px;
   overflow-y: auto;
 `;
+
