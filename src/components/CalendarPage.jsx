@@ -243,7 +243,7 @@ const HomePage = () => {
                     </WrapperCalendar>
 
                 </main>
-                <Modal className='modal' isOpen={isModalOpen} onRequestClose={closeModal}>
+                <Modal className={`modal ${isLightTheme ? 'light' : 'dark'}`} isOpen={isModalOpen} onRequestClose={closeModal}>
                     <ModalWindowWrapper>
                         <form onSubmit={handleFormSubmit}>
                             <div className='modal-head'>
